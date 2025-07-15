@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Scanner | Comprehensive Threat Analysis</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .scanner-form {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-option input {
+            margin-right: 8px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 5px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .hash-info {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-title {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 0;
+        }
+        
+        .close-modal {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            text-align: right;
+        }
+        
+        .modal-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .progress-text {
+            margin-top: 10px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        
+        .result-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        /* Circular Progress Indicators */
+        .score-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 15px;
+			justify-content: center;
+        }
+        
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .circular-progress {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        
+        .circular-progress::before {
+            content: "";
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: white;
+        }
+        
+        .progress-value {
+            position: relative;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .score-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .malicious {
+            background: conic-gradient(#e74c3c var(--progress), #f5b7b1 0deg);
+        }
+        
+        .suspicious {
+            background: conic-gradient(#f39c12 var(--progress), #fad7a0 0deg);
+        }
+        
+        .harmless {
+            background: conic-gradient(#2ecc71 var(--progress), #abebc6 0deg);
+        }
+        
+        .undetected {
+            background: conic-gradient(#95a5a6 var(--progress), #d5dbdb 0deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Security Scanner</h1>
+            <p class="description">Comprehensive threat analysis for domains, IPs, and file hashes</p>
+		<p class="description">For Educational or Research Purpose</p>
+        </header>
+        
+        <div class="scanner-form">
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="url-check" name="check-type" value="url" checked>
+                    <label for="url-check">URL Check</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="domain-check" name="check-type" value="domain">
+                    <label for="domain-check">Domain Analysis</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="ip-check" name="check-type" value="ip">
+                    <label for="ip-check">IP Reputation</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="hash-check" name="check-type" value="hash">
+                    <label for="hash-check">File Hash Check</label>
+                </div>
+            </div>
+            
+            <div class="form-group" id="url-ip-domain-group">
+                <label for="target" id="target-label">Enter domain to scan (example.com)</label>
+                <input type="text" id="target" placeholder="example.com">
+                <div class="error-message" id="target-error"></div>
+            </div>
+            
+            <div class="form-group" id="hash-group" style="display: none;">
+                <label for="hash-input">Enter file hash (MD5, SHA-1, SHA-256, etc.)</label>
+                <input type="text" id="hash-input" placeholder="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855">
+                <div class="error-message" id="hash-error"></div>
+                <p class="hash-info">Enter the cryptographic hash of a file to check its reputation</p>
+            </div>
+            
+            <button id="scan-button" disabled>Scan Now</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing, please wait...</p>
+            <p class="progress-text" id="progress-text">Waiting for the analysis report</p>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>Scan Results</h2>
+			<div class="result-item" style="text-align:center;">
+                <div class="result-title">Threat Scores:</div>
+                <div class="score-container" id="score-container">
+                    <!-- Scores will be inserted here dynamically -->
+                </div>
+            </div>
+            <div class="result-item">
+                <div class="result-title">Target:</div>
+                <div id="result-target"></div>
+            </div>
+            <div class="result-item">
+                <div class="result-title">Type:</div>
+                <div id="result-type"></div>
+            </div>
+            <!--<div class="result-item" style="align:center;">
+                <div class="result-title">Threat Scores:</div>
+                <div class="score-container" id="score-container">
+                    <!-- Scores will be inserted here dynamically 
+                </div>
+            </div>-->
+            <div class="result-item">
+                <div class="result-title">Details:</div>
+                <div class="result-text" id="result-details"></div>
+            </div>
+            <div class="result-item">
+                <div class="result-title">Last Updated:</div>
+                <div id="result-date"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Error Modal -->
+    <div id="error-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Error</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body" id="modal-error-message">
+                An error occurred while processing your request.
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button" id="close-modal-btn">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Security Scanner System | Designed by PoriFyx</p>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const urlRadio = document.getElementById('url-check');
+            const domainRadio = document.getElementById('domain-check');
+            const ipRadio = document.getElementById('ip-check');
+            const hashRadio = document.getElementById('hash-check');
+            const targetLabel = document.getElementById('target-label');
+            const targetInput = document.getElementById('target');
+            const urlIpDomainGroup = document.getElementById('url-ip-domain-group');
+            const hashGroup = document.getElementById('hash-group');
+            const hashInput = document.getElementById('hash-input');
+            const scanButton = document.getElementById('scan-button');
+            const loadingDiv = document.getElementById('loading');
+            const progressText = document.getElementById('progress-text');
+            const resultsDiv = document.getElementById('results');
+            const scoreContainer = document.getElementById('score-container');
+            const targetError = document.getElementById('target-error');
+            const hashError = document.getElementById('hash-error');
+            
+            // Modal elements
+            const errorModal = document.getElementById('error-modal');
+            const modalErrorMessage = document.getElementById('modal-error-message');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const closeModalSpan = document.querySelector('.close-modal');
+            
+            // Validation patterns
+            const DOMAIN_REGEX = /^(?!:\/\/)(?:[a-zA-Z0-9-]+\.)?[a-zA-Z0-9][a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+            const URL_REGEX = /^(?!:\/\/)(?:[a-zA-Z0-9-]+\.)?[a-zA-Z0-9][a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/.*)?$/;
+            const PUBLIC_IP_REGEX = /^(?!0)(?!10\.|127\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.)(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            const HASH_REGEX = /^[a-fA-F0-9]{32,}$/;
+            
+            // Event listeners for radio buttons
+            urlRadio.addEventListener('change', updateFormFields);
+            domainRadio.addEventListener('change', updateFormFields);
+            ipRadio.addEventListener('change', updateFormFields);
+            hashRadio.addEventListener('change', updateFormFields);
+            
+            function updateFormFields() {
+                if(urlRadio.checked) {
+                    urlIpDomainGroup.style.display = 'block';
+                    hashGroup.style.display = 'none';
+                    targetLabel.textContent = 'Enter URL to scan (example.com/path)';
+                    targetInput.placeholder = 'example.com/path';
+                    targetInput.value = '';
+                    hashInput.value = '';
+                } 
+                else if(domainRadio.checked) {
+                    urlIpDomainGroup.style.display = 'block';
+                    hashGroup.style.display = 'none';
+                    targetLabel.textContent = 'Enter domain to analyze (example.com)';
+                    targetInput.placeholder = 'example.com';
+                    targetInput.value = '';
+                    hashInput.value = '';
+                }
+                else if(ipRadio.checked) {
+                    urlIpDomainGroup.style.display = 'block';
+                    hashGroup.style.display = 'none';
+                    targetLabel.textContent = 'Enter public IP address to check';
+                    targetInput.placeholder = '8.8.8.8';
+                    targetInput.value = '';
+                    hashInput.value = '';
+                }
+                else if(hashRadio.checked) {
+                    urlIpDomainGroup.style.display = 'none';
+                    hashGroup.style.display = 'block';
+                    targetInput.value = '';
+                    hashInput.value = '';
+                }
+                
+                scanButton.disabled = true;
+                clearErrors();
+            }
+            
+            // Input validation
+            targetInput.addEventListener('input', validateInput);
+            hashInput.addEventListener('input', validateInput);
+            
+            // Modal event listeners
+            closeModalBtn.addEventListener('click', function() {
+                errorModal.style.display = 'none';
+            });
+            
+            closeModalSpan.addEventListener('click', function() {
+                errorModal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === errorModal) {
+                    errorModal.style.display = 'none';
+                }
+            });
+            
+            function validateInput() {
+                clearErrors();
+                let isValid = false;
+                
+                if(urlRadio.checked) {
+                    // URL validation
+                    if(targetInput.value.trim() === '') {
+                        showError(targetError, 'Please enter a URL');
+                    } else if(!URL_REGEX.test(targetInput.value.trim())) {
+                        showError(targetError, 'Please enter a valid URL (example.com/path) without http/https/www');
+                    } else {
+                        isValid = true;
+                    }
+                } 
+                else if(domainRadio.checked) {
+                    // Domain validation (strict)
+                    if(targetInput.value.trim() === '') {
+                        showError(targetError, 'Please enter a domain');
+                    } else if(!DOMAIN_REGEX.test(targetInput.value.trim())) {
+                        showError(targetError, 'Please enter a valid domain (example.com) without http/https/www or paths');
+                    } else {
+                        isValid = true;
+                    }
+                }
+                else if(ipRadio.checked) {
+                    // Public IP validation
+                    const ip = targetInput.value.trim();
+                    if(ip === '') {
+                        showError(targetError, 'Please enter an IP address');
+                    } else if(!PUBLIC_IP_REGEX.test(ip)) {
+                        showError(targetError, 'Please enter a valid public IPv4 address (e.g. 8.8.8.8)');
+                    } else if(isPrivateIP(ip)) {
+                        showError(targetError, 'This is a private IP address. Please enter a public IP.');
+                    } else {
+                        isValid = true;
+                    }
+                }
+                else if(hashRadio.checked) {
+                    // Hash validation
+                    if(hashInput.value.trim() === '') {
+                        showError(hashError, 'Please enter a file hash');
+                    } else if(!HASH_REGEX.test(hashInput.value.trim())) {
+                        showError(hashError, 'Please enter a valid hash (MD5, SHA-1, SHA-256, etc.)');
+                    } else {
+                        isValid = true;
+                    }
+                }
+                
+                scanButton.disabled = !isValid;
+                return isValid;
+            }
+            
+            function isPrivateIP(ip) {
+                // Check against standard private IP ranges
+                const ipParts = ip.split('.').map(Number);
+                
+                // 10.0.0.0/8
+                if(ipParts[0] === 10) return true;
+                
+                // 172.16.0.0/12
+                if(ipParts[0] === 172 && ipParts[1] >= 16 && ipParts[1] <= 31) return true;
+                
+                // 192.168.0.0/16
+                if(ipParts[0] === 192 && ipParts[1] === 168) return true;
+                
+                // 127.0.0.0/8
+                if(ipParts[0] === 127) return true;
+                
+                // 169.254.0.0/16 (link-local)
+                if(ipParts[0] === 169 && ipParts[1] === 254) return true;
+                
+                return false;
+            }
+            
+            function showError(element, message) {
+                element.textContent = message;
+                element.style.display = 'block';
+            }
+            
+            function clearErrors() {
+                targetError.style.display = 'none';
+                hashError.style.display = 'none';
+            }
+            
+            function showModalError(message) {
+                modalErrorMessage.textContent = message;
+                errorModal.style.display = 'block';
+            }
+            
+            function createScoreIndicator(type, score) {
+                const percentage = Math.min(100, Math.max(0, score));
+                const progress = (percentage / 100) * 360;
+                
+                const scoreItem = document.createElement('div');
+                scoreItem.className = 'score-item';
+                
+                const progressDiv = document.createElement('div');
+                progressDiv.className = `circular-progress ${type}`;
+                progressDiv.style.setProperty('--progress', `${progress}deg`);
+                
+                const progressValue = document.createElement('div');
+                progressValue.className = 'progress-value';
+                progressValue.textContent = `${percentage}%`;
+                
+                const scoreLabel = document.createElement('div');
+                scoreLabel.className = 'score-label';
+                scoreLabel.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                
+                progressDiv.appendChild(progressValue);
+                scoreItem.appendChild(progressDiv);
+                scoreItem.appendChild(scoreLabel);
+                
+                return scoreItem;
+            }
+            
+            function parseScoresFromResponse(text) {
+                // Extract scores from the text response
+                const scores = {
+                    malicious: 0,
+                    suspicious: 0,
+                    harmless: 0,
+                    undetected: 0
+                };
+                
+                // Try to find scores in the text with more flexible matching
+                const scoreRegex = /(MALICIOUS|SUSPICIOUS|HARMLESS|UNDETECTED)[\s\-_]*SCORE[\s:]*(\d+)/gi;
+                let match;
+                
+                while ((match = scoreRegex.exec(text)) !== null) {
+                    const type = match[1].toLowerCase();
+                    const value = parseInt(match[2]);
+                    
+                    if (type in scores) {
+                        scores[type] = Math.min(100, Math.max(0, value)); // Ensure score is between 0-100
+                    }
+                }
+                
+                return scores;
+            }
+            
+            // Handle form submission
+            scanButton.addEventListener('click', function() {
+                if(!validateInput()) return;
+                
+                // Show loading with persistent message, hide results
+                loadingDiv.style.display = 'block';
+                progressText.textContent = 'Waiting for the analysis report...';
+                resultsDiv.style.display = 'none';
+                scoreContainer.innerHTML = ''; // Clear previous scores
+                
+                const checkType = document.querySelector('input[name="check-type"]:checked').value;
+                let data = { type: checkType };
+                
+                if(checkType === 'hash') {
+                    data.target = hashInput.value.trim();
+                } else {
+                    data.target = targetInput.value.trim();
+                }
+                
+                sendToWebhook(data);
+            });
+            
+            function sendToWebhook(data) {
+                // Start timeout timer to show we're still waiting
+                const timeoutTimer = setTimeout(() => {
+                    progressText.textContent = 'Still processing... this may take a moment';
+                }, 5000);
+                
+                fetch('https://workflow.porifyx.com/webhook/150f8de3-d60c-4110-9ac8-22031a8cf6bb', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    clearTimeout(timeoutTimer);
+                    
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text || `HTTP error! status: ${response.status}`);
+                        });
+                    }
+                    return response.text(); // Get response as text
+                })
+                .then(textResponse => {
+                    // Hide loading, show results
+                    loadingDiv.style.display = 'none';
+                    resultsDiv.style.display = 'block';
+                    
+                    // Display results
+                    document.getElementById('result-target').textContent = data.target || 'N/A';
+                    document.getElementById('result-type').textContent = data.type ? data.type.toUpperCase() : 'N/A';
+                    document.getElementById('result-details').textContent = textResponse;
+                    document.getElementById('result-date').textContent = new Date().toLocaleString();
+                    
+                    // Parse and display scores - always show all indicators even if 0
+                    const scores = parseScoresFromResponse(textResponse);
+                    scoreContainer.innerHTML = '';
+                    
+                    // Always show all score indicators
+                    scoreContainer.appendChild(createScoreIndicator('malicious', scores.malicious));
+                    scoreContainer.appendChild(createScoreIndicator('suspicious', scores.suspicious));
+                    scoreContainer.appendChild(createScoreIndicator('harmless', scores.harmless));
+                    scoreContainer.appendChild(createScoreIndicator('undetected', scores.undetected));
+                    
+                    // Display the raw response for debugging
+                    console.log('Webhook response:', textResponse);
+                })
+                .catch(error => {
+                    clearTimeout(timeoutTimer);
+                    console.error('Error:', error);
+                    loadingDiv.style.display = 'none';
+                    showModalError(error.message || 'An error occurred while scanning. Please try again.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
